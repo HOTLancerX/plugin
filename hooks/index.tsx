@@ -29,11 +29,30 @@ type DynamicRouteConfig = {
   position: number;
 };
 
+type SubmenuItem = {
+  title: string;
+  link: string;
+  position?: number;
+};
+
+type MenuItem = {
+  title: string;
+  icon: string;
+  position: number;
+  link: string;
+  submenu: SubmenuItem[];
+};
+
+type SidebarMenuConfig = {
+  menus: MenuItem[];
+};
+
 type PluginModule = {
   metadata: PluginMetadata;
   actions?: ActionConfig[];
   routes?: RouteConfig[];
   dynamicRoutes?: DynamicRouteConfig[];
+  sidebarMenus?: SidebarMenuConfig;
   [key: string]: unknown;
 };
 
@@ -70,6 +89,8 @@ const dynamicRouteRegistry: Record<
   }>
 > = { view: [], admin: [] };
 
+const sidebarMenuRegistry: MenuItem[] = [];
+
 const pluginRegistry: Record<
   string,
   {
@@ -103,17 +124,34 @@ function createRouteMatcher(routePattern: string) {
   };
 }
 
+export function registerSidebarMenus(menus: MenuItem[]) {
+  menus.forEach(menu => {
+    const existingIndex = sidebarMenuRegistry.findIndex(m => m.link === menu.link);
+    if (existingIndex >= 0) {
+      menu.submenu.forEach(sub => {
+        if (!sidebarMenuRegistry[existingIndex].submenu.some(s => s.link === sub.link)) {
+          sidebarMenuRegistry[existingIndex].submenu.push(sub);
+        }
+      });
+      sidebarMenuRegistry[existingIndex].submenu.sort((a: SubmenuItem, b: SubmenuItem) => (a.position || 0) - (b.position || 0));
+    } else {
+      sidebarMenuRegistry.push(menu);
+    }
+  });
+  sidebarMenuRegistry.sort((a: MenuItem, b: MenuItem) => a.position - b.position);
+}
+
 export function registerComponents(components: PluginModule) {
   const { 
     metadata, 
     actions = [], 
     routes = [], 
     dynamicRoutes = [], 
+    sidebarMenus,
     ...comps 
   } = components;
   const pluginName = metadata["PluginName"];
 
-  // Register plugin metadata and components
   pluginRegistry[pluginName] = {
     metadata,
     components: Object.entries(comps).reduce((acc, [key, value]) => {
@@ -124,7 +162,6 @@ export function registerComponents(components: PluginModule) {
     }, {} as Record<string, React.ComponentType<any>>),
   };
 
-  // Register action components (only if enabled)
   if (metadata.Status === 'enable') {
     actions.forEach(({ hookName, position, componentName }) => {
       if (!componentName) return;
@@ -141,7 +178,6 @@ export function registerComponents(components: PluginModule) {
     });
   }
 
-  // Always register routes but track their status
   routes.forEach(({ type, route, componentName, position }) => {
     if (!componentName) return;
 
@@ -158,7 +194,6 @@ export function registerComponents(components: PluginModule) {
     routeRegistry[type].sort((a, b) => a.position - b.position);
   });
 
-  // Register dynamic routes
   dynamicRoutes.forEach(({ type, routePattern, componentName, position }) => {
     if (!componentName) return;
 
@@ -177,6 +212,10 @@ export function registerComponents(components: PluginModule) {
     });
     dynamicRouteRegistry[type].sort((a, b) => a.position - b.position);
   });
+
+  if (sidebarMenus?.menus) {
+    registerSidebarMenus(sidebarMenus.menus);
+  }
 }
 
 export const Hooks = ({ name }: { name: string }) => {
@@ -214,6 +253,10 @@ export function getDynamicRouteMatch(type: 'view' | 'admin', path: string) {
   return null;
 }
 
+export function getSidebarMenus(): MenuItem[] {
+  return [...sidebarMenuRegistry];
+}
+
 export function getAllPlugins() {
   return Object.values(pluginRegistry).map(({ metadata }) => metadata);
 }
@@ -228,7 +271,6 @@ export function togglePluginStatus(pluginName: string, currentStatus: PluginStat
   
   if (plugin) {
     plugin.metadata.Status = newStatus;
-    // Re-register all plugins to update the registries
     registerAllPlugins();
   }
   return newStatus;
@@ -248,12 +290,12 @@ declare const require: {
 let isRegistered = false;
 
 export function registerAllPlugins() {
-  // Clear existing registries
   Object.keys(actionRegistry).forEach(key => delete actionRegistry[key]);
   routeRegistry.view = [];
   routeRegistry.admin = [];
   dynamicRouteRegistry.view = [];
   dynamicRouteRegistry.admin = [];
+  sidebarMenuRegistry.length = 0;
 
   const pluginContext = require.context('../plugins', true, /\.tsx$/);
 

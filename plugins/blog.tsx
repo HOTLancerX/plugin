@@ -89,3 +89,33 @@ export const dynamicRoutes = [
     position: 1
   }
 ];
+
+export const Sidebar = [
+  {
+    "id": "dashboard",
+    "title": "Dashboard",
+    "icon": "Home",
+    "position": "1",
+    "link": "/dashboard",
+    "submenu": []
+  },
+  {
+    "id": "posts",
+    "title": "Posts",
+    "icon": "FileText",
+    "position": "2",
+    "link": "/posts",
+    "submenu": [
+      {
+        "id": "all-posts",
+        "title": "All Posts",
+        "link": "/posts/all"
+      },
+      {
+        "id": "add-new",
+        "title": "Add New",
+        "link": "/posts/new"
+      }
+    ]
+  }
+]
