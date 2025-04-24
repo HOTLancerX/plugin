@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import React from 'react';
 
 export const metadata = {
@@ -12,7 +13,7 @@ export const Blogs = [
     id: 1,
     title: "Mastering React Hooks in 2025",
     slug: "mastering-react-hooks-in-2025",
-    image: "/images/react-hooks.jpg",
+    image: "/1.jpg",
     description: "Learn all about React Hooks in this comprehensive guide.",
     content: "<p>This is the full content of the React Hooks article...</p>"
   },
@@ -20,7 +21,7 @@ export const Blogs = [
     id: 2,
     title: "Next.js 15 New Features",
     slug: "nextjs-15-new-features",
-    image: "/images/nextjs.jpg",
+    image: "/2.jpg",
     description: "Explore the latest features in Next.js 15.",
     content: "<p>This is the full content of the Next.js article...</p>"
   }
@@ -34,7 +35,7 @@ export const BlogListing = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {Blogs.map(blog => (
           <div key={blog.id} className="border rounded-lg overflow-hidden shadow-lg">
-            <img src={blog.image} alt={blog.title} className="w-full h-48 object-cover" />
+            <Image width={600} height={300} src={blog.image} alt={blog.title} className="w-full h-48 object-cover" />
             <div className="p-4">
               <h2 className="text-xl font-semibold mb-2">{blog.title}</h2>
               <p className="text-gray-600 mb-4">{blog.description}</p>
@@ -63,7 +64,7 @@ export const PostView = ({ params }: { params: { slug: string } }) => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-3xl">
       <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
-      <img src={post.image} alt={post.title} className="w-full h-64 object-cover mb-6 rounded-lg" />
+      <Image width={600} height={300} src={post.image} alt={post.title} className="w-full h-64 object-cover mb-6 rounded-lg" />
       <div 
         className="prose prose-lg max-w-none"
         dangerouslySetInnerHTML={{ __html: post.content }}

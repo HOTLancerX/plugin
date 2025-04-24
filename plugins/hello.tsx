@@ -1,4 +1,5 @@
 // plugins/hello.tsx
+import Link from 'next/link';
 import React from 'react';
 
 export const metadata = {
@@ -15,9 +16,10 @@ export const HeaderDesignA = () => (
       <h1 className="text-2xl font-bold">My Awesome Site</h1>
       <nav>
         <ul className="flex space-x-6">
-          <li><a href="/" className="hover:underline">Home</a></li>
-          <li><a href="/coming-soon" className="hover:underline">Coming Soon</a></li>
-          <li><a href="/admin/dashboard" className="hover:underline">Admin</a></li>
+          <li><Link href="/" className="hover:underline">Home</Link></li>
+          <li><Link href="/coming-soon" className="hover:underline">Coming Soon</Link></li>
+          <li><Link href="/admin/dashboard" className="hover:underline">Admin</Link></li>
+          <li><Link href="/blog" className="hover:underline">Blog</Link></li>
         </ul>
       </nav>
     </div>
