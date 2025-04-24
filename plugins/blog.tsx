@@ -54,7 +54,7 @@ export const BlogListing = () => {
           ))}
         </div>
       </div>
-      <Hooks name="Blog-header" />
+      <Hooks name="Blog-footer" />
     </>
   );
 };
@@ -64,7 +64,7 @@ export const PostView = ({ params }: { params: { slug: string } }) => {
   const post = Blogs.find(blog => blog.slug === params.slug);
   
   if (!post) {
-    return <div>Post not found</div>;
+    return <div className='text-center'>Post not found</div>;
   }
 
   return (
@@ -82,7 +82,7 @@ export const PostView = ({ params }: { params: { slug: string } }) => {
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
       </div>
-      <Hooks name="Blog-header" />
+      <Hooks name="Blog-footer" />
     </>
   );
 };
@@ -115,7 +115,7 @@ export const BlogFooter = () => (
 // Hook registrations
 export const actions = [
   { hookName: 'Blog-header', position: 1, componentName: 'BlogHeader' },
-  { hookName: 'Blog-header', position: 1, componentName: 'BlogFooter' },
+  { hookName: 'Blog-footer', position: 1, componentName: 'BlogFooter' },
 ];
 
 export const routes = [
