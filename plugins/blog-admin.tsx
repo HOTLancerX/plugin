@@ -11,21 +11,21 @@ export const sidebarMenus = {
       title: "Blog",
       icon: "Book",
       position: 3,
-      link: "/admin/blog",
+      link: "/blog",
       submenu: [
         {
           title: "All Blogs",
-          link: "/admin/blog/all",
+          link: "/blog/all",
           position: 1
         },
         {
           title: "Add New",
-          link: "/admin/blog/new",
+          link: "/blog/new",
           position: 2
         },
         {
           title: "Categories",
-          link: "/admin/blog/categories",
+          link: "/blog/categories",
           position: 3
         }
       ]

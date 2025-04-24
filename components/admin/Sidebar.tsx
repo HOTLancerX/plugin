@@ -11,14 +11,14 @@ export const defaultSidebarMenus = [
     title: "Dashboard",
     icon: "Home",
     position: 1,
-    link: "/admin/dashboard",
+    link: "/dashboard",
     submenu: []
   },
   {
     title: "Plugins",
     icon: "FileText",
     position: 2,
-    link: "/admin/plugins",
+    link: "/plugins",
     submenu: []
   }
 ];
@@ -58,7 +58,7 @@ export const Sidebar = () => {
                 onClick={() => menu.submenu.length > 0 && toggleMenu(menu.link)}
               >
                 <span className="mr-2">{menu.icon}</span>
-                <Link href={menu.link} className="flex-grow">
+                <Link href={`/admin${menu.link}`} className="flex-grow">
                   {menu.title}
                 </Link>
                 {menu.submenu.length > 0 && (
@@ -67,13 +67,12 @@ export const Sidebar = () => {
                   </span>
                 )}
               </div>
-              
               {menu.submenu.length > 0 && expandedMenus[menu.link] && (
                 <ul className="ml-6 mt-1 space-y-1">
                   {menu.submenu.sort((a, b) => (a.position || 0) - (b.position || 0)).map(sub => (
                     <li key={sub.link}>
                       <Link 
-                        href={sub.link}
+                        href={`/admin${sub.link}`}
                         className={`block p-2 rounded hover:bg-gray-700 ${pathname === sub.link ? 'bg-gray-700' : ''}`}
                       >
                         {sub.title}
