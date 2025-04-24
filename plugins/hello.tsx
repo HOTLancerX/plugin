@@ -44,7 +44,7 @@ export const Meta = () => (
 );
 
 export const ComingSoonPage = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gray-100">
+  <div className="flex items-center justify-center bg-gray-100">
     <div className="text-center p-8 bg-white rounded-lg shadow-xl">
       <h1 className="text-4xl font-bold text-blue-600 mb-4">Coming Soon!</h1>
       <p className="text-xl text-gray-600">
@@ -55,7 +55,7 @@ export const ComingSoonPage = () => (
 );
 
 export const AdminDashboard = () => (
-  <div className="min-h-screen bg-gray-50 p-8">
+  <div className="p-8">
     <div className="max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold text-gray-800 mb-8">Admin Dashboard</h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -10,7 +10,7 @@ export const metadata = {
 
 // কম্পোনেন্ট ১: হেডার ডিজাইন এ
 export const hello = () => (
-  <div className="bg-blue-100 text-white p-4">
+  <div className="bg-blue-600 text-white p-4">
     <h1 className="text-2xl font-bold">HeLLo</h1>
   </div>
 );

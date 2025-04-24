@@ -9,23 +9,23 @@ export const sidebarMenus = {
   menus: [
     {
       title: "Blog",
-      icon: "Book",
+      icon: "📌",
       position: 3,
-      link: "/blog",
+      link: "/admin/blog",
       submenu: [
         {
           title: "All Blogs",
-          link: "/blog/all",
+          link: "/admin/blog/all",
           position: 1
         },
         {
           title: "Add New",
-          link: "/blog/new",
+          link: "/admin/blog/new",
           position: 2
         },
         {
           title: "Categories",
-          link: "/blog/categories",
+          link: "/admin/blog/categories",
           position: 3
         }
       ]
