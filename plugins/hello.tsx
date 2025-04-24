@@ -1,6 +1,13 @@
 // plugins/hello.tsx
 import React from 'react';
 
+export const metadata = {
+  "PluginName": "Hello",
+  "Version": "2.2.0",
+  "Description": "In tribute to the famous Hello Dolly plugin",
+  "Status": "enable" //disable
+};
+
 // Components
 export const HeaderDesignA = () => (
   <header className="bg-blue-600 text-white p-4 shadow-md">

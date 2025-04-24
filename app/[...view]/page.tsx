@@ -1,3 +1,4 @@
+//app/[...view]/page.tsx
 import { notFound } from 'next/navigation';
 import { getRouteComponents } from '@/hooks';
 

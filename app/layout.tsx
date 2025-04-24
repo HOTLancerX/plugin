@@ -2,7 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'My WP-style App',
+  title: 'My',
   description: 'Plugin & hook system like WordPress',
 };
 
