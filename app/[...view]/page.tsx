@@ -1,15 +1,19 @@
-//app/[...view]/page.tsx
 import { notFound } from 'next/navigation';
 import { getRouteComponents, getDynamicRouteMatch } from '@/hooks';
 
-export default function ViewPage({ params }: { params: { view: string[] } }) {
+type Props = {
+  params: {
+    view: string[];
+  };
+};
+
+export default function ViewPage({ params }: Props) {
   if (!params?.view || !Array.isArray(params.view)) {
     return notFound();
   }
 
   const path = `/${params.view.join('/')}`;
   
-  // First check static routes
   const staticRoutes = getRouteComponents('view');
   const staticRoute = staticRoutes.find((r) => r.route === path);
   
@@ -18,7 +22,6 @@ export default function ViewPage({ params }: { params: { view: string[] } }) {
     return <Component />;
   }
   
-  // Then check dynamic routes
   const dynamicMatch = getDynamicRouteMatch('view', path);
   if (dynamicMatch) {
     const { component: Component, params: routeParams } = dynamicMatch;
