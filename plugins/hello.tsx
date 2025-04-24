@@ -90,11 +90,5 @@ export const routes = [
     route: '/dashboard',
     componentName: 'AdminDashboard',
     position: 1
-  },
-  {
-    type: 'admin',
-    route: '/blog',
-    componentName: 'AdminDashboard',
-    position: 1
   }
 ];

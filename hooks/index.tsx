@@ -1,5 +1,5 @@
-//hooks/index.tsx
 import React from 'react';
+
 type PluginStatus = 'enable' | 'disable';
 
 type PluginMetadata = {
@@ -22,10 +22,18 @@ type RouteConfig = {
   position: number;
 };
 
+type DynamicRouteConfig = {
+  type: 'view' | 'admin';
+  routePattern: string;
+  componentName: string;
+  position: number;
+};
+
 type PluginModule = {
   metadata: PluginMetadata;
   actions?: ActionConfig[];
   routes?: RouteConfig[];
+  dynamicRoutes?: DynamicRouteConfig[];
   [key: string]: unknown;
 };
 
@@ -50,6 +58,18 @@ const routeRegistry: Record<
   }>
 > = { view: [], admin: [] };
 
+const dynamicRouteRegistry: Record<
+  string,
+  Array<{
+    component: React.ComponentType<any>;
+    routePattern: string;
+    position: number;
+    pluginName: string;
+    status: PluginStatus;
+    matchFn: (path: string) => Record<string, string> | null;
+  }>
+> = { view: [], admin: [] };
+
 const pluginRegistry: Record<
   string,
   {
@@ -58,8 +78,39 @@ const pluginRegistry: Record<
   }
 > = {};
 
+function createRouteMatcher(routePattern: string) {
+  const patternParts = routePattern.split('/');
+  
+  return (path: string) => {
+    const pathParts = path.split('/');
+    if (patternParts.length !== pathParts.length) return null;
+    
+    const params: Record<string, string> = {};
+    
+    for (let i = 0; i < patternParts.length; i++) {
+      const patternPart = patternParts[i];
+      const pathPart = pathParts[i];
+      
+      if (patternPart.startsWith('[') && patternPart.endsWith(']')) {
+        const paramName = patternPart.slice(1, -1);
+        params[paramName] = pathPart;
+      } else if (patternPart !== pathPart) {
+        return null;
+      }
+    }
+    
+    return params;
+  };
+}
+
 export function registerComponents(components: PluginModule) {
-  const { metadata, actions = [], routes = [], ...comps } = components;
+  const { 
+    metadata, 
+    actions = [], 
+    routes = [], 
+    dynamicRoutes = [], 
+    ...comps 
+  } = components;
   const pluginName = metadata["PluginName"];
 
   // Register plugin metadata and components
@@ -106,6 +157,26 @@ export function registerComponents(components: PluginModule) {
     });
     routeRegistry[type].sort((a, b) => a.position - b.position);
   });
+
+  // Register dynamic routes
+  dynamicRoutes.forEach(({ type, routePattern, componentName, position }) => {
+    if (!componentName) return;
+
+    const component = comps[componentName] as React.ComponentType<any> | undefined;
+    if (!component || typeof component !== 'function') return;
+
+    const matchFn = createRouteMatcher(routePattern);
+
+    dynamicRouteRegistry[type].push({
+      component,
+      routePattern,
+      position,
+      pluginName,
+      status: metadata.Status,
+      matchFn
+    });
+    dynamicRouteRegistry[type].sort((a, b) => a.position - b.position);
+  });
 }
 
 export const Hooks = ({ name }: { name: string }) => {
@@ -122,6 +193,25 @@ export const Hooks = ({ name }: { name: string }) => {
 
 export function getRouteComponents(type: 'view' | 'admin') {
   return (routeRegistry[type] || []).filter(route => route.status === 'enable');
+}
+
+export function getDynamicRouteMatch(type: 'view' | 'admin', path: string) {
+  const routes = dynamicRouteRegistry[type] || [];
+  
+  for (const route of routes) {
+    if (route.status !== 'enable') continue;
+    
+    const params = route.matchFn(path);
+    if (params) {
+      return {
+        component: route.component,
+        params,
+        pluginName: route.pluginName
+      };
+    }
+  }
+  
+  return null;
 }
 
 export function getAllPlugins() {
@@ -162,6 +252,8 @@ export function registerAllPlugins() {
   Object.keys(actionRegistry).forEach(key => delete actionRegistry[key]);
   routeRegistry.view = [];
   routeRegistry.admin = [];
+  dynamicRouteRegistry.view = [];
+  dynamicRouteRegistry.admin = [];
 
   const pluginContext = require.context('../plugins', true, /\.tsx$/);
 
