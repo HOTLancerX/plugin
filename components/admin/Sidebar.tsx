@@ -20,6 +20,13 @@ export const defaultSidebarMenus = [
     position: 2,
     link: "/admin/plugins",
     submenu: []
+  },
+  {
+    title: "Option",
+    icon: "📌",
+    position: 2,
+    link: "/admin/option",
+    submenu: []
   }
 ];
 

@@ -19,3 +19,11 @@ export const actions = [
   { hookName: 'Nex-header', position: 1, componentName: 'hello' },
   { hookName: 'Nex-plugin', position: 1, componentName: 'hello' },
 ];
+
+export const Option = [
+  {
+    id: 3,
+    title: 'Hello khan',
+    componentName: 'hello',
+  }
+];
