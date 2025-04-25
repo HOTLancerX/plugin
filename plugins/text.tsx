@@ -22,8 +22,13 @@ export const actions = [
 
 export const Option = [
   {
-    id: 3,
-    title: 'Hello khan',
+    id: 147,
+    title: 'Hello Khan',
+    componentName: 'hello',
+  },
+  {
+    id: 14,
+    title: 'Hello World',
     componentName: 'hello',
   }
 ];

@@ -1,70 +1,96 @@
 //components/admin/Option.tsx
 "use client";
-import React, { useState, useEffect } from 'react';
-import { getOptions, getOptionComponents } from '@/hooks/option';
+import React, { useState } from 'react';
+import { getOptions, getPluginComponents } from '@/hooks';
 
-export const Options = () => {
-  const [options, setOptions] = useState(getOptions());
-  const [components, setComponents] = useState(getOptionComponents());
-  const [activeTab, setActiveTab] = useState<number | null>(null);
+// Define OptionItem type locally since it's not imported
+type OptionItem = {
+  id: number;
+  title: string;
+  componentName: string;
+  pluginName?: string;
+};
 
-  useEffect(() => {
-    setOptions(getOptions());
-    setComponents(getOptionComponents());
-    if (options.length > 0 && activeTab === null) {
-      setActiveTab(options[0].id);
+// Default component definition
+const DefaultComponent: React.FC = () => (
+  <div className="bg-gray-100 p-6 rounded-lg">
+    <h2 className="text-xl font-semibold">Default Component</h2>
+    <p className="mt-2 text-gray-600">Select an option from the tabs above</p>
+  </div>
+);
+
+// Default options configuration
+const defaultOptions: OptionItem[] = [
+  {
+    id: 1,
+    title: 'Dashboard',
+    componentName: 'DefaultComponent',
+  },
+  {
+    id: 2,
+    title: 'Settings',
+    componentName: 'DefaultComponent',
+  }
+];
+
+// Main Option component
+const Option: React.FC = () => {
+  // Get all registered options
+  const allOptions = [...defaultOptions, ...getOptions()];
+  
+  // State for active option
+  const [activeOptionId, setActiveOptionId] = useState<number>(allOptions[0]?.id || 0);
+
+  // Find the active option data
+  const activeOption = allOptions.find(option => option.id === activeOptionId);
+  
+  // Determine which component to render
+  let ActiveComponent: React.ComponentType = DefaultComponent;
+
+  if (activeOption) {
+    if (activeOption.pluginName) {
+      // Try to get component from plugin
+      const pluginComponents = getPluginComponents(activeOption.pluginName);
+      const PluginComponent = pluginComponents[activeOption.componentName];
+      if (PluginComponent) {
+        ActiveComponent = PluginComponent;
+      }
+    } else if (activeOption.componentName === 'DefaultComponent') {
+      // Use default component
+      ActiveComponent = DefaultComponent;
     }
-  }, []);
-
-  if (options.length === 0) {
-    return <div className="p-4">No options available</div>;
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex border-b border-gray-200">
-        {options.map(option => (
-          <button
-            key={option.id}
-            className={`px-4 py-2 font-medium text-sm focus:outline-none ${
-              activeTab === option.id
-                ? 'border-b-2 border-blue-500 text-blue-600'
-                : 'text-gray-500 hover:text-gray-700'
-            }`}
-            onClick={() => setActiveTab(option.id)}
-          >
-            {option.title}
-          </button>
-        ))}
-      </div>
-
-      <div className="p-4">
-        {options.map(option => {
-          const Component = components[option.componentName];
-          return (
-            <div 
-              key={option.id} 
-              className={activeTab === option.id ? 'block' : 'hidden'}
+    <div className="bg-white rounded-lg shadow">
+      {/* Tab navigation */}
+      <div className="border-b border-gray-200">
+        <nav className="flex -mb-px">
+          {allOptions.map(option => (
+            <button
+              key={`${option.id}-${option.title}`}
+              onClick={() => setActiveOptionId(option.id)}
+              className={`
+                whitespace-nowrap py-4 px-6 border-b-2 font-medium text-sm
+                ${activeOptionId === option.id
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }
+              `}
             >
-              {Component ? <Component /> : `Component ${option.componentName} not found`}
-            </div>
-          );
-        })}
+              {option.title}
+            </button>
+          ))}
+        </nav>
+      </div>
+      
+      {/* Active component display */}
+      <div className="p-6">
+        <ActiveComponent />
       </div>
     </div>
   );
 };
 
-// Default options
-export const Option = [
-  {
-    id: 1,
-    title: 'Hello khan',
-    componentName: 'Khan',
-  },
-  {
-    id: 4,
-    title: 'Hello khan', 
-    componentName: 'Khan',
-  }
-];
+export default Option;
+export { defaultOptions };
